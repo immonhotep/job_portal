@@ -57,9 +57,10 @@ Application main functions:
 3. activate the virtual environment ( source venv/bin/activate )
 4. install django and required packages ( pip install -r requirements.txt)
 5. run  the necessary commands to auto create database system  ( python manage.py makemigrations) and then ( python manage.py migrate )
-6. create superuser account  ( python manage.py runserver)
-7. login with your superuser account on http://127.0.0.1:8000/
-8. create some job categories under navbar project dropdown menu
-9. after this  register as employee and employee and test application functions
+6. create superuser account  ( python manage.py createsuperuser)
+7. Run the application (python manage.py runserver)
+8. login with your superuser account on http://127.0.0.1:8000/
+9. create some job categories under navbar project dropdown menu
+10. after this  register as employee and employee and test application functions
 
 
