@@ -1,7 +1,7 @@
 #job portal application
 
 
-This web application made only for educational and parctise purposes.
+This web application made only for educational and practise purposes.
 Application backend written with python, and django web framework , frontend have simple design, and contain bootsrap (fastboostrap) elements, and free templates - contain several java-scripts.
 
 Application main functions:
@@ -55,7 +55,7 @@ Application main functions:
 1. clone the repository  ( https://github.com/immonhotep/job_portal.git )
 2. create python virtual environment ( virtualenv venv on linux )
 3. activate the virtual environment ( source venv/bin/activate )
-4. pip install -r requirements.txt  ( install django and required packages)
+4. install django and required packages ( pip install -r requirements.txt)
 5. run  the necessary commands to auto create database system  ( python manage.py makemigrations) and then ( python manage.py migrate )
 6. create superuser account  ( python manage.py runserver)
 7. login with your superuser account on http://127.0.0.1:8000/
