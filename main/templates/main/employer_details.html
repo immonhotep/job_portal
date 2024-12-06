@@ -1,0 +1,250 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+
+
+<div class="border border-solid border-2 border-primary container bg-light mb-6 mt-6">
+
+
+            <nav class="navbar-dark bg-dark">
+                <div class="container py-2">
+                    <div class="d-flex justify-content-center">
+                    {% if request.user.employerprofile == employer %}
+                    <a href={% url 'update_employer'  %}   class="btn btn-light btn-sm ms-1"><i class="fa-solid fa-wrench"></i>Update profile </a>
+                    {% endif %}
+                    </div>
+                </div>
+            </nav>
+
+
+          
+
+
+
+  <div class="container py-9" id="content">      
+  <body>
+    <header class="bg-dark bg-gradient text-white py-5">
+      <div class="container">
+        <div class="row">
+        
+          <div class="col-md-3 text-left text-md-center mb-3">
+            <img class="rounded-circle" src="{{employer.imageURL}}" style="width: 200px; height:200px;"/>
+            </br>
+
+          <!--test-->
+          {% if request.user.employeeprofile %}
+          <button  class="btn btn-outline-primary btn-sm mt-8" data-bs-toggle="modal" data-bs-target="#reviewmodal-{{employer.pk}}">Send review</button>
+               
+                <div class="modal fade" tabindex="-1" id="reviewmodal-{{employer.pk}}" aria-labelledby="reviewmodal-{{employer.pk}}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Send review about {{employer.company_name}} </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{% url 'send_review' employer.pk  %}">
+                        {% csrf_token %}
+
+                       
+                  
+                        <div class="mb-3">
+                          <label  class="form-label">Review</label>
+                          <textarea class="form-control" name="reviewbody" maxlength="2000"  rows="6" required></textarea>
+                        </div>
+
+                      
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+              <!--- RATING -->
+              {% if not  ratio %}
+              <form method="POST" action = {% url 'send_star_rating' employer.pk%}>
+              {% csrf_token %}
+              <div class="me-20 py-8 mb-5">
+              <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+              <label class="star star-5" for="star-5"></label>
+              <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+              <label class="star star-4" for="star-4"></label>
+              <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+              <label class="star star-3" for="star-3"></label>
+              <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+              <label class="star star-2" for="star-2"></label>
+              <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+              <label class="star star-1" for="star-1"></label>
+              </div>
+
+              <button class="btn btn-primary btn-sm" type="submit"> submit  </button>
+              </form>
+              {% else %}
+
+                <div class="my-4 d-flex justify-content-center small {% if employer.averagerate < 3 %} text-danger {% elif employer.averagerate < 4 %}text-warning {% elif employer.averagerate < 5 %} 
+                  text-info {% else %} text-success  {% endif %} mb-2">
+                <span>
+         
+
+                    <i class="{% if employer.averagerate < 0.5%}fa-regular fa-star{% elif employer.averagerate >= 0.5 and employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 1.5%}fa-regular fa-star{% elif employer.averagerate >= 1.5 and employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 2.5%}fa-regular fa-star{% elif employer.averagerate >= 2.5 and employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 3.5%}fa-regular fa-star{% elif employer.averagerate >= 3.5 and employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 4.5%}fa-regular fa-star{% elif employer.averagerate >= 4.5 and employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <small>({{employer.countrate}})</small>
+                </span>
+              
+              </div>
+
+        
+
+              {% endif %}
+
+            {% else %}
+
+             {% if employer.averagerate %}
+              
+              <div class="my-4 d-flex justify-content-center small {% if employer.averagerate < 3 %} text-danger {% elif employer.averagerate < 4 %}text-warning {% elif employer.averagerate < 5 %} 
+                  text-info {% else %} text-success  {% endif %} mb-2">
+                <span>
+
+                    <i class="{% if employer.averagerate < 0.5%}fa-regular fa-star{% elif employer.averagerate >= 0.5 and employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 1.5%}fa-regular fa-star{% elif employer.averagerate >= 1.5 and employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 2.5%}fa-regular fa-star{% elif employer.averagerate >= 2.5 and employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 3.5%}fa-regular fa-star{% elif employer.averagerate >= 3.5 and employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 4.5%}fa-regular fa-star{% elif employer.averagerate >= 4.5 and employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    
+                    <small>({{employer.countrate}})</small>
+                </span>
+              
+              </div>
+              {% else %}
+              <div class="my-4 d-flex justify-content-center small">
+                <small><i> Not rated </i><a href={% url 'employer_detail' employer.pk %}>({{employer.countrate}})</a></small>
+              </div>
+              {% endif %}
+
+            {% endif %}
+            
+          </div>
+         
+
+
+          <div class="col-md-9">
+            <h1>{{employer.company_name}}</h1>
+            <h5>{{employer.sector}}</h5>
+            <p class="border-top pt-3">{{employer.main_profile}}</p>
+            <p>Employee number: <i>{{employer.employee_number}}</i></p>
+          </div>       
+        </div>        
+      </div>
+    </header>
+    <nav class="bg-dark text-white-50 mb-5">
+      <div class="container">
+          <div class="row p-3">
+              <div class="col-md pb-2 pb-md-0">
+                  <i class="fa-solid fa-envelope fa-xl"></i>
+                  <a class="text-white ml-2">{{employer.user.email}}</a>
+              </div>
+              <div class="col-md text-md-center pb-2 pb-md-0">
+                  <i class="fa-solid fa-house fa-xl"></i>
+                  <a class="text-white ml-2">{{employer.address}}</a>
+              </div>       
+              <div class="col-md text-md-right">
+                  <i class="fa-solid fa-phone fa-xl"></i>
+                  <a class="text-white ml-2">{{employer.phone}}</a>
+              </div>       
+          </div>
+      </div>
+    </nav>
+
+      
+  </body>
+  </div>
+
+
+
+
+
+
+<div class="container mb-6">
+        <div class="card mx-1 border border-solid border-2 border-primary bg-light">
+        <div class="card-body text-center">
+            <h5 class="card-title">Reviews({{review_count}})</h5>
+            {% for review in reviews %}
+
+                <div class="card mb-4">
+                <div class="card-body">
+                    <p>{{review.review}}</p>
+
+                      
+                    <div class="d-flex justify-content-between">
+               
+                    <div class="d-flex flex-row align-items-center">
+
+                        {% for ration in review.employer.get_ration.all %}
+                        {% if ration.employee == review.employee %}
+                        
+                        <div class="my-4 d-flex justify-content-center small {% if ration.star_rating < 3 %} text-danger {% elif ration.star_rating < 4 %}text-warning {% elif ration.star_rating < 5 %} 
+                          text-info {% else %} text-success  {% endif %} mb-2">
+                        <span>
+                        
+                            <i class="fa fa-star{% if ration.star_rating < 0.5%}-o{% elif ration.star_rating >= 0.5 and ration.star_rating < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if ration.star_rating < 1.5%}-o{% elif ration.star_rating >= 1.5 and ration.star_rating < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if ration.star_rating < 2.5%}-o{% elif ration.star_rating >= 2.5 and ration.star_rating < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if ration.star_rating < 3.5%}-o{% elif ration.star_rating >= 3.5 and ration.star_rating < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if ration.star_rating < 4.5%}-o{% elif ration.star_rating >= 4.5 and ration.star_rating < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+                           
+                        </span>
+                      
+                      </div>
+                      {% endif %}
+                      {% endfor %}
+
+             
+                    </div>
+                    </div>
+                </div>
+                </div>
+         
+            {% endfor %}
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-sm mt-6">
+                    {% if reviews.has_previous %}
+                    <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{reviews.previous_page_number}}">Previous</a></li>
+                    {% endif%}
+                    {% for page  in reviews.paginator.page_range %}
+                    <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{page}}">{{page}}</a></li>
+                    {% endfor %}
+                    {% if reviews.has_next %}
+                    <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{reviews.next_page_number}}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+
+
+             <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm">
+              <i class="fa-solid fa-left-long"></i> 
+            </a>
+
+
+        </div>
+
+        
+        </div>
+
+</div>
+
+
+</div>
+
+{% endblock content %}

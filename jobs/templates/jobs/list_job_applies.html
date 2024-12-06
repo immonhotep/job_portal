@@ -1,0 +1,128 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container py-9 mt-8 bg-light border border-solid border-2 border-primary ">
+<h6 class="text-center py-8 text-sm">{% if jobapplies %} {% if request.session.selection == "CURRENT" %} Your current job applies {% elif request.session.selection == "ARCHIVED" %} Your achived jobb applies {% elif request.session.selection == "ALL" %} Your all job applies  {% endif %}  {% else %} You have no current job applies {% endif %}</h6>
+
+<form method="GET" id="apply-status">
+<select name="applies" class="form-select form-select-sm mb-4" aria-label=".form-select-sm example">
+  <option value="CURRENT" {% if request.session.selection == "CURRENT" %} selected {% endif %}>Current</option>
+  <option value="ARCHIVED" {% if request.session.selection == "ARCHIVED" %} selected {% endif %}>Archived</option>
+  <option value="ALL" {% if request.session.selection == "ALL" %} selected {% endif %}>All</option>
+</select>
+</form>
+
+
+
+<div class="card-group">
+{% for jobapply in jobapplies %}
+  <div class="card mx-1 border border-solid border-2 border-primary">
+    <img src="{{jobapply.job.employer.imageURL}}" class="card-icon text-right position-absolute top-0 end-0 mt-1 mb-6 text-light rounded  bg-dark" alt="card example" height=80 width=80 > 
+    <div class="card-body">
+      <h5 class="card-title mt-6">{{jobapply.job.title}}</h5>
+      <p class="card-text">{{jobapply.job.job_description|truncatechars:300}}</p>
+      <p class="card-text">Employer: {{jobapply.job.employer}} </p>
+      <p class="card-text {% if jobapply.status == "Pending" %} text-info {% elif  jobapply.status == "Invited" %} text-warning {% elif jobapply.status == "Rejected" %} text-danger {% else %} text-success {% endif %}">Status: {{jobapply.status}} </p>
+      <p class="card-text"><small class="text-muted">{{jobapply.job.publication_date}}</small></p>
+      {% if jobapply.archived %}
+      <p class="card-text"><small class="text-muted text-info"><u><i>Archived</i></u></small></p>
+      {% endif %}
+
+    </div>
+  <div class="btn-group" role="group" aria-label="Basic example">
+    <a href="{% url 'job_detail' jobapply.job.pk %}" class="btn btn-secondary">Job detail</a>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeapplymodal-{{jobapply.pk}}">Remove apply</button>
+    {% if not jobapply.archived %}
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#Archiveapplymodal-{{jobapply.pk}}">Archive apply</button>
+    {% endif %}
+  </div>
+  </div>
+
+
+<div class="modal fade" tabindex="-1" id="removeapplymodal-{{jobapply.pk}}" aria-labelledby="removeapplymodal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Do you want to remove this apply ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{jobapply.job.title}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'remove_apply' jobapply.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Remove</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="Archiveapplymodal-{{jobapply.pk}}" aria-labelledby="Archiveapplymodal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Do you want to archive this apply ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{jobapply.job.title}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'archive_apply' jobapply.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Archive</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  {% endfor %}
+</div>
+
+        <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-sm py-9">
+                          {% if jobapplies.has_previous %}
+                          <li class="page-item"><a class="page-link bg-dark text-white ms-2" href="?page={{ jobapplies.previous_page_number }}{% if request.GET.applies %}&applies={{ request.GET.applies }}{% endif %}">Previous</a></li>
+                          {% endif%}
+
+                          {% for num  in jobapplies.paginator.page_range %}
+                          {% if jobapplies.number == num %}
+                          <li class="page-item"><a class="page-link bg-dark text-white ms-2" href="">{{num}}</a></li>
+                          {% else %}
+                          <li class="page-item"><a class="page-link bg-dark text-white ms-2" href="?page={{ num }}{% if request.GET.applies %}&applies={{ request.GET.applies }}{% endif %}">{{num}}</a></li>
+                          {% endif %}
+                          {% endfor %}
+                          {% if jobapplies.has_next %}
+                          <li class="page-item"><a class="page-link bg-dark text-white ms-2" href="?page={{ jobapplies.next_page_number }}{% if request.GET.applies %}&applies={{ request.GET.applies }}{% endif %}">Next</a></li>
+                          {% endif %}
+                        </ul>
+          </nav>
+
+
+
+
+</div>
+
+
+<script>
+
+
+$(document).ready(function(){
+    $("#apply-status").on("change", function(){
+        $("#apply-status").submit();
+    });
+});
+
+
+</script>
+
+
+
+{% endblock content %}

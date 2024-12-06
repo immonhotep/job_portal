@@ -1,0 +1,36 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+
+
+
+<div class="container py-9 ">
+<div class="card mx-1 border border-solid border-2 border-primary">
+  <div class="card-header d-flex align-items-center border-bottom">
+    <span class="avatar text-bg-primary avatar-lg fs-5">
+    <i class="fa-solid fa-rectangle-list"></i>
+    </span>
+    <div class="ms-3">
+      <h6 class="mb-0 fs-sm">{% include 'main/universal_form_heading.html' %}</h6>
+      
+    </div>
+   
+  </div>
+  <form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="card-body">
+   {{form.as_p}}
+   <button type="submit" class="btn btn-primary btn-sm"> submit </button>
+   <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm">
+   <i class="fa-solid fa-left-long"></i>
+   </a>
+  </div>
+  </form>
+  
+</div>
+
+</div>
+
+{% endblock content %}

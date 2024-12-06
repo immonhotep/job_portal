@@ -1,0 +1,94 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+<div class="container py-9 mt-8 ">
+
+<div class="card mx-1 border border-solid border-2 border-primary">
+  <div class="card-header">
+    Job Details
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{job.title}}</h5>   
+    <p class="card-text">School requirement:<b> {{job.required_school}}</b></p>
+    <p class="card-text">Type:<b> {{job.job_type}}</b></p>
+    <p class="card-text">Payment: <b>{% if job.payment  %}  {{job.payment}} HUF {% else %} <i>not present</i> {% endif %}</b></p>
+    <p class="card-text">Required skills:</br><b> {{job.required_skills}}</b></p>
+    <p class="card-text">Description:</br><b> {{job.required_skills}}</b></p>
+    <p class="card-text">Benefits package:</br><b> {{job.benefits_package}}</b></p>
+    <p class="card-text">Other information:</br><b> {{job.other_information}}</b></p>
+    <p class="card-text">Job location:<b> {{job.job_location}}</b></p>
+    <hr>
+    <p class="text-center">Employer data:</p>
+
+    {% if job.employer.averagerate %}
+              
+      <div class="my-4 d-flex justify-content-center small {% if job.employer.averagerate < 3 %} text-danger {% elif job.employer.averagerate < 4 %}text-warning {% elif job.employer.averagerate < 5 %} 
+        text-info {% else %} text-success  {% endif %} mb-2">
+      <span>
+                
+     <i class="{% if job.employer.averagerate < 0.5%}fa-regular fa-star{% elif job.employer.averagerate >= 0.5 and job.employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+     <i class="{% if job.employer.averagerate < 1.5%}fa-regular fa-star{% elif job.employer.averagerate >= 1.5 and job.employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+     <i class="{% if job.employer.averagerate < 2.5%}fa-regular fa-star{% elif job.employer.averagerate >= 2.5 and job.employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+     <i class="{% if job.employer.averagerate < 3.5%}fa-regular fa-star{% elif job.employer.averagerate >= 3.5 and job.employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+     <i class="{% if job.employer.averagerate < 4.5%}fa-regular fa-star{% elif job.employer.averagerate >= 4.5 and job.employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+      <small><a href={% url 'employer_detail' job.employer.pk %}>({{job.employer.countrate}})</a></small>
+      </span>
+      </div>
+
+    {% else %}
+    <div class="my-4 d-flex justify-content-center small">
+    <small><i> Not rated</i> <a href={% url 'employer_detail' job.employer.pk %}>({{job.employer.countrate}})</a></small>
+    </div>
+    {% endif %}
+
+
+
+    <p class="card-text">Name:<b> {{job.employer}}</b></p>
+    <p class="card-text text-muted">Sector:<b><i> {{job.employer.sector}}</i></b></p> 
+    <p class="card-text text-muted">Address:<b><i> {{job.employer.address}}</i></b></p>
+    <p class="card-text text-muted">Phone:<b><i> {{job.employer.phone}}</i></b></p>
+    <p class="card-text text-muted">Email:<b><i> {{job.employer.user.email}}</i></b></p>
+    <p class="card-text text-muted">Main profile:</br><b><i> {{job.employer.main_profile}}</i></b></p>
+    <p class="card-text text-muted">Employee number:<b><i> {{job.employer.employee_number}}</i></b></p>
+    
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applymodal-{{job.pk}}" {% if not request.user.employeeprofile %} disabled {% endif %}>
+     
+  {% if not request.user.employeeprofile %} Need login as employee to send apply{% else %}Send Apply{% endif %}</button>
+
+     <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm">
+      <i class="fa-solid fa-left-long"></i> 
+    </a>
+
+
+    <div class="modal fade" tabindex="-1" id="applymodal-{{job.pk}}" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Do you want to send apply for this job ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      {{job.title}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action={% url 'send_apply' job.pk %}>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Apply</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  </div>
+</div>
+
+</div>
+
+{% endblock content%}

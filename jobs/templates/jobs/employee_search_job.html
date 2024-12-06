@@ -1,0 +1,141 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container py-9 mt-8  bg-light border border-solid border-2 border-primary">
+
+
+{% if not  quicksearch %}
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card mx-1 bg-light border border-solid border-2 border-primary">
+      <div class="card-body">
+ 
+        <p class="card-text">
+
+        <div class="card mx-1 border border-solid border-2 border-primary">
+          <div class="card-header">
+
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">Search for job</h5>
+              <form method="GET">
+            
+                <label for="category">select a job category:</label>
+                  <select name="category" class="form-select form-select-sm mt-2" aria-label=".form-select-sm example">
+                  <option value="" selected>Select</option>
+                
+                    {% for category in categories %}
+                    <option value="{{category.pk}}">{{category.category_name}}</option>
+                    {% endfor %}
+                  </select>
+               
+                
+                  <label for="category">select school:</label>
+                  <select name="school" class="form-select form-select-sm mt-2" aria-label=".form-select-sm example">
+                    <option value="" selected>Select</option>
+                    <option value="Elementary School">Elementary School</option>
+                    <option value="Professional School">Professional School</option>
+                    <option value="vocational school">vocational school</option>
+                    <option value="College">College</option>
+                    <option value="University">University</option>
+                  </select>
+
+                  <div class="input-group py-6">
+                    <input name="location" type="search" id="form1" class="form-control form-control-sm" placeholder="Type location" aria-label="Search" />
+                  </div>
+          
+                  
+              <div class="input-group py-6">
+                  <input  name="search" type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                  <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>search</button>
+              </div>
+              </form>          
+            </a>
+          </div>
+        </div>
+        
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+
+  <h6 class="text-center py-8 text-sm"> {% if jobs %} Search result   {% else %} no search result {% endif %}</h6>
+    <div class="card-group">
+    {% for job in jobs %}
+      <div class="card position-relative mx-1 border border-solid border-2 border-primary">
+          
+        <img src="{{job.employer.imageURL}}" class="card-icon text-right position-absolute top-0 end-0 mt-1  text-light rounded  bg-dark" alt="card example" height=80 width=80 > 
+        <div class="card-body">
+
+          <h5 class="card-title mt-20">{{job.title}}</h5>
+          <p class="card-text">{{job.job_description|truncatechars:300}}</p>
+          <p class="card-text">Employer: {{job.employer}} </p>
+          <p class="card-text"><small class="text-muted">{{job.publication_date}}</small></p>
+
+          <div class="small {% if job.employer.averagerate < 3 %} text-danger {% elif job.employer.averagerate < 4 %}text-warning {% elif job.employer.averagerate < 5 %} 
+                  text-info {% else %} text-success  {% endif %} mb-2">
+                <span>
+              
+                    <i class="{% if job.employer.averagerate < 0.5%}fa-regular fa-star{% elif job.employer.averagerate >= 0.5 and job.employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 1.5%}fa-regular fa-star{% elif job.employer.averagerate >= 1.5 and job.employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 2.5%}fa-regular fa-star{% elif job.employer.averagerate >= 2.5 and job.employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 3.5%}fa-regular fa-star{% elif job.employer.averagerate >= 3.5 and job.employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 4.5%}fa-regular fa-star{% elif job.employer.averagerate >= 4.5 and job.employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+
+
+                </span><a href="{% url 'employer_detail' job.employer.pk %}"><small>({{job.employer.countrate}})</small></a>
+              
+        </div>
+
+
+
+
+        </div>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a href="{% url 'job_detail' job.pk %}" class="btn btn-secondary">Job detail</a>
+        </div>
+      </div>
+      
+      {% endfor %}
+    </div>
+
+
+              <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-sm py-9">
+                  {% if jobs.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ jobs.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.school %}&school={{request.GET.school}}{% endif %}{% if request.GET.location %}&location={{request.GET.location}}{% endif %}{% if request.GET.search %}&search={{request.GET.search}}{% endif %}{% if request.GET.quicksearch %}&quicksearch={{request.GET.quicksearch}} {% endif %}">Previous</a></li>
+                  {% endif%}
+
+                  {% for num  in jobs.paginator.page_range %}
+                  {% if jobs.number == num %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="">{{num}}</a></li>
+                  {% else %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %} {% if request.GET.school %}&school={{request.GET.school}}{% endif %}{% if request.GET.location %}&location={{request.GET.location}}{% endif %}{% if request.GET.search %}&search={{request.GET.search}}{% endif %}{% if request.GET.quicksearch %}&quicksearch={{request.GET.quicksearch}} {% endif %}">{{num}}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if jobs.has_next %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ jobs.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %} {% if request.GET.school %}&school={{request.GET.school}}{% endif %}{% if request.GET.location %}&location={{request.GET.location}}{% endif %}{% if request.GET.search %}&search={{request.GET.search}}{% endif %}{% if request.GET.quicksearch %}&quicksearch={{request.GET.quicksearch}} {% endif %}">Next</a></li>
+                  {% endif %}
+          
+                </ul>
+          </nav>
+
+  
+  <div class="card-body ms-5">
+   <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm mt-8">
+   <i class="fa-solid fa-left-long"></i> 
+   </a>
+  </div>
+
+</div>
+
+
+
+
+
+{% endblock content %}

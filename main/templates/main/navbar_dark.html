@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-lg bg-primary bg-opacity-25">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+    data-bs-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarExample">
+      <ul class="navbar-nav me-auto mb-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'home' %}"><i class="fa-solid fa-house fa-sm"></i>Home</a>
+        </li>
+        {% if request.user.employerprofile %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-gears"></i>Settings</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'employer_add_job' %}">Add new Job </a></li>
+            <li><a class="dropdown-item" href="{% url 'employer_list_jobs' %}">List My jobs</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="{% url 'list_followed_employee' %}">My followed Employees</a></li>
+            <li><a class="dropdown-item" href="{% url 'show_employee_applications' %}">Appications</a></li>
+            <li><a class="dropdown-item" href="{% url 'show_messages' %}">Show my messages</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if not request.user.is_authenticated %}
+        <form method="POST" action={% url 'navbarstyle' %}>
+        {% csrf_token %}
+        <li class="nav-item">
+          <button  type="submit" class="btn btn-primary btn-sm" value="light" name="type"  class="nav-link" aria-current="page">For Employees</button>
+        </li>
+        </form>
+        {% endif %}
+          {% if request.user.employerprofile %}
+          <li class="nav-item">
+          <a href="{% url 'search_employee'%}" class="btn btn-primary btn-sm"  class="nav-link" aria-current="page"><i class="fa-solid fa-magnifying-glass fa-sm me-1"></i>Search employee</a>
+          </li>
+        {% endif  %}
+      </ul>
+      <div class="d-flex align-items-center flex-column flex-lg-row">
+         {% if request.user.is_authenticated %}
+            {% if not request.user.is_superuser %}
+              <a href="{% url 'employer_detail' request.user.employerprofile.pk  %}"><img src="{{request.user.employerprofile.imageURL}}" class="rounded-circle" style="width: 50px; height:50px;" alt="{{requeset.user.username}}"/></a>
+              
+            {% endif %}
+          {% endif %}
+
+
+        {% if not request.user.is_authenticated %}
+        <a class="btn btn-dark mx-2" href="{% url 'signup_employer' %}"><i class="fa-solid fa-user-group fa-sm me-1"></i>Sign up as employer</a>
+        <a class="btn btn-primary mx-2" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket fa-sm me-1"></i>Login</a>
+        {% else %}
+        <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mx-2"><i class="fa-solid fa-right-from-bracket fa-sm me-1"></i>Logout</a>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+    data-bs-target="#navbarExample" aria-controls="navbarExample" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarExample">
+      <ul class="navbar-nav me-auto mb-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'home' %}"><i class="fa-solid fa-house fa-sm"></i>Home</a>
+        </li>
+        {% if request.user.employeeprofile %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-gears fa-sm"></i>Settings</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'list_applies' %}">List my job applies</a></li>
+            <li><a class="dropdown-item" href="{% url 'show_reviews' %}">See My Reviews</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="{% url 'show_messages' %}">Show my messages</a></li>          
+          </ul>
+        </li>
+        {% endif %}
+        {% if not request.user.is_authenticated%}
+        <form method="POST" action={% url 'navbarstyle' %}>
+        {% csrf_token %}
+        <li class="nav-item">
+          <button  type="submit" class="btn btn-dark btn-sm" value="dark" name="type"  class="nav-link" aria-current="page">For Employers</button>
+        </li>
+        </form>
+        {% endif %}
+         <li class="nav-item">
+          <a href="{% url 'employee_search_job'%}" class="btn btn-primary btn-sm"  class="nav-link" aria-current="page"><i class="fa-solid fa-magnifying-glass fa-sm me-1"></i>Advanced job search</a>
+        </li>
+        <li class="nav-item">
+          <form method="GET" action="{% url 'employee_search_job' %}" >
+          <div class="input-group me-2 mb-2 mb-lg-0">
+          
+          <input type="search" name="quicksearch" class="form-control form-control-sm" placeholder="Search"
+                aria-describedby="button-addon">
+          <button class="btn btn-outline-secondary" type="submit"><i class="fa fa-search fa-2xs"></i></button>
+          
+        </div>
+        </form>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+         {% if notifications %}
+          <a href="{% url 'show_notified_jobs' %}" class="btn btn-success btn-sm"  class="nav-link" aria-current="page"><i class="fa-solid fa-face-smile"></i></i> Notified jobs </a>
+         {% else  %}
+         <a href="{% url 'make_notification' %}" class="btn btn-warning btn-sm"  class="nav-link" aria-current="page"><i class="fa-regular fa-face-sad-tear"></i> You have no job notifications </a>
+         {% endif %}
+        </li>
+        {% endif %}
+      </ul>
+      <div class="d-flex align-items-center flex-column flex-lg-row">
+      {% if request.user.is_authenticated %}
+        {% if not request.user.is_superuser %}
+          <a href="{% url 'profile_CV' %}"><img src="{{request.user.employeeprofile.imageURL}}" class="rounded-circle" style="width: 50px; height:50px;" alt="{{requeset.user.username}}"/></a>
+          
+        {% endif %}
+      {% endif %}
+        
+
+
+        {% if  not request.user.is_authenticated %}
+        <a class="btn btn-primary mx-2" href="{% url 'signup_employee' %}"><i class="fa-solid fa-user fa-sm me-1"></i>Sign up as employee</a>
+        <a class="btn btn-primary mx-2" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket fa-sm me-1"></i>Login</a>
+        {% else %}
+        <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mx-2"><i class="fa-solid fa-right-from-bracket fa-sm me-1"></i>Logout</a>
+        </form>      
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

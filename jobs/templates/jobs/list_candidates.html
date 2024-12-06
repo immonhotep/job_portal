@@ -1,0 +1,50 @@
+
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container py-9 mt-8 ">
+<h6 class="text-center py-8 text-sm">{% if applications %}Candidates for this: {{job.title}}{% else %} currently no candidates for this job {% endif %}</h6>
+{% if applications%}
+{% for application in applications%}
+<section class="w-100 px-4 py-9 mt-9 bg-light" style="border-radius: .5rem .5rem 0 0;">
+  <div class="row d-flex justify-content-center">
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      <div class="card" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <img src="{{application.applicant.imageURL}}"
+                alt="avatar" class="img-fluid" style="width: 180px; border-radius: 10px;">
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h5 class="mb-1">{{application.applicant.user.first_name}}-{{application.applicant.user.last_name}}</h5>
+              <p class="mb-2 pb-1">Sector: <i>{% if application.applicant.sector %}{{ application.applicant.sector}}{% else%} not given {% endif %}</i></p>
+              <p class="mb-2 pb-1">{{application.applicant.profession}}</p>
+              <p><i>Birth date: <small>{{application.applicant.birth_date}}</small></i></p>
+              <p><i>Address: <small>{{application.applicant.address}}</small></i></p>
+              <p><i>Email: <small>{{application.applicant.user.email}}</small></i></p>
+              <p><i>Phone: <small>{{application.applicant.phone_number}}</small></i></p>
+              <p><i>Bio: <small>{{application.applicant.bio|truncatechars:200}}</small></p>
+              <p><i>Status:<b class="{% if application.status == 'Pending' %} text-info  {% elif application.status == 'Invited' %} text-warning {% elif application.status == 'Rejected' %} text-danger {% else %} text-success {% endif %}"> {{application.status}}</b></i>
+              <div class="d-flex pt-1">
+                <a href={% url 'show_application' application.pk  %} data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary me-1 flex-grow-1">Application setting</a>
+                <a href="{% url 'see_profile' application.applicant.pk %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1">See profile</a>
+                <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm mx-4">
+                    <i class="fa-solid fa-left-long"></i>
+                </a>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endfor %}
+{% endif %}
+</div>
+
+
+{% endblock content %}

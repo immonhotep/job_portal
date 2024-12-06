@@ -1,0 +1,103 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+<form method="GET" id="job-status">
+<div class="container py-9 mt-8 bg-light border border-solid border-2 border-primary">
+<h3 class="text-center text-primary pb-12 ">Your uploaded Jobs</h3>
+
+
+<select name="status"  class="form-select form-select-sm mb-4" aria-label=".form-select-sm example">
+  <option value="ALL" {% if request.session.selection == "ALL" %} selected  {% endif %} >All</option>
+  <option value="YES" {% if request.session.selection == "YES" %} selected  {% endif %}>Position Filled</option>
+  <option value="NO" {% if request.session.selection == "NO" %} selected  {% endif %}>Open positions</option>
+  <option value="ONGOING" {% if request.session.selection == "ONGOING" %} selected  {% endif %}>Jobs have candidate</option>
+</select>
+
+</form>
+
+
+
+<div class="card-group">
+ {% for job in myjobs %}
+
+  <div class="card mx-1 border border-solid border-2 border-primary">
+    <div class="card-body">
+      <h5 class="card-title">{{job.title}}</h5>
+      <p class="card-text">{{job.job_description|truncatechars:300}}</p>
+      <p class="card-text"><small class="text-muted">{% if not job.valid %} <small class="text-success">Position Filled</small>{% else %} <small class="text-danger">Open position</small>  {% endif%}</small></p>
+      <p class="card-text"><small class="text-muted">{{job.publication_date}}</small></p>
+    </div>
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <a href="{% url 'update_employer_job' job.pk%}" class="btn btn-light btn-sm">
+      <i class="fa-solid fa-pencil"></i>
+      </a>
+      <button type="button" class="btn btn-light btn-sm"  data-bs-toggle="modal" data-bs-target="#exampleModal-{{job.pk}}">
+      <i class="fa-solid fa-trash-can text-danger"></i>
+      </button>
+      <a href="{% url 'show_candidates' job.pk%}" class="btn btn-light btn-sm">
+      <i class="fa-solid fa-user"></i>
+      </a>
+
+    </div>
+
+  </div>
+
+  <div class="modal fade" tabindex="-1" id="exampleModal-{{job.pk}}" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Do you want to delete job ? </h5>
+      </div>
+      <div class="modal-body">
+        {{job.title}}
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'delete_employer_job' job.pk %}">
+        {% csrf_token %}
+        <button type="" class="btn btn-danger">Yes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endfor %}
+</div>
+<div>
+
+          <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-sm py-9">
+                  {% if myjobs.has_previous %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ myjobs.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Previous</a></li>
+                  {% endif%}
+
+                  {% for num  in myjobs.paginator.page_range %}
+                  {% if myjobs.number == num %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="">{{num}}</a></li>
+                  {% else %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{num}}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if myjobs.has_next %}
+                  <li class="page-item"><a class="page-link bg-dark text-white ms-1" href="?page={{ myjobs.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Next</a></li>
+                  {% endif %}
+                </ul>
+          </nav>
+
+
+<script>
+$(document).ready(function(){
+    $("#job-status").on("change", function(){
+        $("#job-status").submit();
+    });
+});
+</script>
+
+
+
+{% endblock content %}

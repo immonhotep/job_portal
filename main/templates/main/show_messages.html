@@ -1,0 +1,239 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container py-9 bg-light border border-solid border-2 border-primary my-1">
+{% if notes %}
+<h5 class="text-center text-muted py-6">Your  messages ({{notes.count}})</h5>
+
+
+{% if unread_notes %}
+<form method="POST" id="setread" action="{% url 'set_to_read' %}">
+{% csrf_token %}
+<div class="form-check">
+  <input class="form-check-input" name="setread" value="setread" type="checkbox" />
+  <label class="form-check-label" for="flexCheckDefault">
+    set all message to answered
+  </label>
+</div>
+</form>
+{% endif  %}
+
+
+
+
+{% else %}
+<h5 class="text-center text-muted py-6">You have no messages</h5>
+{% endif %}
+<div class="row d-flex justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    {% for note in notes %}
+    {% if not note.reply %}
+    <div class="card shadow-0 mx-1 border border-solid border-2 border-primary my-1" style="background-color: {% if note.checked == True %} #f0f2f5 {% elif note.checked == False  %} #fae4e0  {% endif %};">
+      <div class="card-body p-4">
+        <div class="card mb-4 mx-1 border border-solid border-2 border-primary">
+          <div class="card-body">
+            <p>{{note.title}}</p>
+            <p><small><i>{{note.message}}</i></small></p>
+
+            <div class="d-flex justify-content-between">
+              <div class="d-flex flex-row align-items-center">
+                <img src="{% if note.sender.employerprofile %} {{note.sender.employerprofile.imageURL}} {% elif note.sender.employeeprofile %} {{note.sender.employeeprofile.imageURL}} {% endif %}" alt="avatar" width="25"
+                  height="25" />
+                <p class="small mb-0 ms-2">{% if note.sender.employerprofile  %} {{note.sender.employerprofile.company_name}} {% elif note.sender.employeeprofile %} {{note.sender.first_name}}-{{note.sender.last_name}} {% endif %} (<small><i>{{note.date}}</i></small>) </p>
+               
+              </div>
+              
+              <div class="d-flex flex-row align-items-center">
+                {% if note.sender != request.user %}
+                <p class="small text-muted mb-0">Reply</p>
+                <a href="{% url 'reply_message' note.sender.pk note.pk %}" data-bs-toggle="modal" data-bs-target="#notemodal-{{note.sender.pk}}-{{note.pk}}"><i class="fa-solid fa-message mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                {% endif %}
+                 {% if note.sender == request.user %}
+                    <p class="small text-muted mb-0">Update</p>
+                    <a href="{% url 'update_message' note.pk %}" ><i class="fa-solid fa-wrench mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                    <p class="small text-muted mb-0">Delete</p>
+                    <a data-bs-toggle="modal" data-bs-target="#deletemodal-{{note.pk}}"><i class="fa-solid fa-trash mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                  {% endif %}
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+            <div class="modal fade" tabindex="-1" id="deletemodal-{{note.pk}}" aria-labelledby="deletemodal-{{note.pk}}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Do you want to delete this message?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{note.title}}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="{% url 'delete_message' note.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+
+    {% endif %}
+    {% if  note.get_reply %}
+
+          {% for reply in note.get_reply %}
+
+            <div class="card shadow-0 mx-1 border border-solid border-2 border-primary my-1" style="background-color: {% if reply.checked == True %} #ebf7e2 {% elif reply.checked == False  %} #fae4e0  {% endif %};">
+              <div class="card-body p-4">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <p><small class="text-xs italic">reply to: {{note}} ({{note.date}}) </small></p> 
+                    <p>{{reply.title}}</p>
+                    <p><small><i>{{reply.message}}</i></small></p>
+
+                    <div class="d-flex justify-content-between">
+                      <div class="d-flex flex-row align-items-center">
+                        <img src="{% if reply.sender.employerprofile %} {{reply.sender.employerprofile.imageURL}} {% elif reply.sender.employeeprofile %} {{reply.sender.employeeprofile.imageURL}} {% endif %}" alt="avatar" width="25"
+                          height="25" />
+                        <p class="small mb-0 ms-2">{% if reply.sender.employerprofile  %} {{reply.sender.employerprofile.company_name}} {% elif reply.sender.employeeprofile %} {{reply.sender.first_name}}-{{reply.sender.last_name}} {% endif %} (<small><i>{{note.date}}</i></small>)  </p>
+                      </div>
+                      
+                      <div class="d-flex flex-row align-items-center">
+                        {% if reply.sender != request.user %} 
+                        <p class="small text-muted mb-0">Reply</p>         
+                        <a href="{% url 'reply_message' reply.sender.pk reply.pk %}" data-bs-toggle="modal" data-bs-target="#replymodal-{{reply.sender.pk}}-{{reply.pk}}"><i class="fa-solid fa-message mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                        {% endif %}
+                        {% if reply.sender == request.user %}
+                        <p class="small text-muted mb-0">Update</p>
+                        <a href="{% url 'update_message' reply.pk %}" ><i class="fa-solid fa-wrench mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                        <p class="small text-muted mb-0">Delete</p>
+                        <a href=""  data-bs-toggle="modal" data-bs-target="#deletemodal-{{reply.pk}}" ><i class="fa-solid fa-trash mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i></a>
+                        {% endif %}
+                      </div>
+
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" tabindex="-1" id="replymodal-{{reply.sender.pk}}-{{reply.pk}}" aria-labelledby="replymodal-{{reply.sender.pk}}-{{reply.pk}}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Send reply to {{reply.sender.first_name}} {{reply.sender.last_name}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{% url 'reply_message' reply.sender.pk reply.pk   %}">
+                        {% csrf_token %}
+                        <label class="form-label" >Title</label>
+                        <input class="form-control form-control-sm" type="text" maxlength="250" name="replytitle"/>
+
+                        <div class="mb-3">
+                          <label  class="form-label">Message</label>
+                          <textarea class="form-control" name="replybody" maxlength="2000"  rows="6"></textarea>
+                        </div>
+
+                      
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="modal fade" tabindex="-1" id="deletemodal-{{reply.pk}}" aria-labelledby="deletemodal-{{reply.pk}}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Do you want to delete this message?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{reply.title}}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="{% url 'delete_message' reply.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+                
+
+          {% endfor %}
+    {% endif %}
+
+
+        <div class="modal fade" tabindex="-1" id="notemodal-{{note.sender.pk}}-{{note.pk}}" aria-labelledby="notemodal-{{note.sender.pk}}-{{note.pk}}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Send reply to {{note.sender.first_name}} {{note.sender.last_name}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{% url 'reply_message' note.sender.pk note.pk   %}">
+                        {% csrf_token %}
+                        <label class="form-label" >Title</label>
+                        <input class="form-control form-control-sm" type="text" maxlength="250" name="replytitle" required/>
+
+                        <div class="mb-3">
+                          <label  class="form-label">Message</label>
+                          <textarea class="form-control" name="replybody" maxlength="2000"  rows="6" required></textarea>
+                        </div>
+
+                      
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">cancel</button>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+    {% endfor %}
+
+
+  </div>
+</div>
+
+</div>
+
+<script>
+
+
+$(document).ready(function(){
+    $("#setread").on("change", function(){
+        $("#setread").submit();
+    });
+});
+
+
+</script>
+
+
+{% endblock content%}

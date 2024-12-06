@@ -1,0 +1,67 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+{% if profiles %}
+
+<section class="w-100 px-4 py-9 mt-9" style="background-color: #ffffff; border-radius: .5rem .5rem 0 0;">
+<h5 class="text-center text-muted py-6">Employees on this sector: {{sector}} ( {{ profile_count }} )</h5>
+  <div class="row d-flex justify-content-center">
+    
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      {% for result in profiles %}
+      <div class="card" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <img src="{{result.imageURL}}"
+                alt="avatar" class="img-fluid" style="width: 180px; border-radius: 10px;">
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h5 class="mb-1">{{result.user.first_name}}-{{result.user.last_name}}</h5>
+              <p class="mb-2 pb-1">Sector: <i>{% if result.sector %}{{result.sector}}{% else%} not given {% endif %}</i></p>
+              <p class="mb-2 pb-1">{{result.profession}}</p>
+              <p><i>Birth date: <small>{{result.birth_date}}</small></i></p>
+              <p><i>Address: <small>{{result.address}}</small></i></p>
+              <p><i>Email: <small>{{result.user.email}}</small></i></p>
+              <p><i>Phone: <small>{{result..phone_number}}</small></i></p>
+              <p><i>Bio: <small>{{result.bio|truncatechars:200}}</small></p>
+              <div class="d-flex pt-1">
+                <a href="{% url 'see_profile' result.pk %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1">See profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+        <nav aria-label="Page navigation example">
+        <ul class="pagination mt-6">
+            {% if profiles.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{profiles.previous_page_number}}">Previous</a></li>
+            {% endif%}
+            {% for page  in profiles.paginator.page_range %}
+            <li class="page-item"><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+            {% endfor %}
+            {% if profiles.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{profiles.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    </div>
+  </div>
+</section>
+{% else %}
+<h5 class="text-center text-muted py-6">Not found any employees related this sector: {{sector}}</h5>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}

@@ -1,0 +1,217 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container">
+<h1 class="py-6 text-center text-primary">
+  Job Center
+</h1>
+
+{% if not  request.user.is_superuser %}
+
+<div class="container min-vh-100">
+<div class="row row-cols-3 g-4 py-6">
+
+  <div class="col">
+    <div class="card mx-1 border border-solid border-2 border-primary" id="front-card">
+      <i class="fa-solid fa-list fa-4x text-center py-8"></i>
+      <div class="card-body">
+        <h5 class="card-title"><u>Jobs by Categories</u></h5>
+        {% for category in categories  %}
+        <p class="card-text">
+         <a href="{% url 'show_job_category_list' category.pk%}" >{{category.category_name}} ({{category.job_categories.count}})</a>
+        </p>
+        {% endfor %}
+
+
+      <hr>
+      </div>
+    </div>
+
+    {% if categories.has_other_pages %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-sm mt-6 ms-8">
+            {% if categories.has_previous %}
+            <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page2={{categories.previous_page_number}}">Previous</a></li>
+            {% endif%}
+            {% for page  in categories.paginator.page_range %}
+            <li class="page-item"><a class="page-link  bg-dark text-white me-1" href="?page2={{page}}">{{page}}</a></li>
+            {% endfor %}
+            {% if categories.has_next %}
+            <li class="page-item"><a class="page-link  bg-dark text-white me-1" href="?page2={{categories.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+
+
+  </div>
+  
+
+
+
+{% if request.user.employerprofile %}
+  <div class="col">
+    <div class="card mx-1 border border-solid border-2 border-primary" id="front-card">
+      <i class="fa-solid fa-users fa-4x text-center py-8"></i>
+      <div class="card-body">
+        <h5 class="card-title"><u>employees by Categories</u></h5>
+      
+        {% for category in categories_2  %}
+        <p class="card-text">
+         <a href="{% url 'list_employee_profiles' category.pk%}" >{{category.category_name}} ({{category.cvs.count}})</a>
+        </p>
+        {% endfor %}
+         <hr>
+      </div>
+    </div>
+
+    {% if categories_2.has_other_pages %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-sm mt-6 ms-8">
+            {% if categories_2.has_previous %}
+            <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page3={{categories_2.previous_page_number}}">Previous</a></li>
+            {% endif%}
+            {% for page  in categories_2.paginator.page_range %}
+            <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page3={{page}}">{{page}}</a></li>
+            {% endfor %}
+            {% if categories_2.has_next %}
+            <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page3={{categories_2.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+
+
+  </div>
+  
+
+
+{% endif %}
+
+  <div class="col">
+    <div class="card mx-1 border border-solid border-2 border-primary" id="front-card">
+      <i  class="fa-solid fa-people-roof fa-4x text-center py-8"></i>
+      <div class="card-body">
+        <h5 class="card-title"><u>Jobs by Employers</u></h5>
+        {% for employer in employerprofiles %}
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <a href="{% url 'show_employer_jobs' employer.pk %}"><p class="card-text">{{employer.company_name}}</p></a>
+              </div>
+              <div class="col">
+
+                  <div class="d-flex justify-content-center small {% if employer.averagerate < 3 %} text-danger {% elif employer.averagerate < 4 %}text-warning {% elif employer.averagerate < 5 %} 
+                  text-info {% else %} text-success  {% endif %} mb-2">
+                <span>
+                
+                     
+                    <i class="{% if employer.averagerate < 0.5%}fa-regular fa-star{% elif employer.averagerate >= 0.5 and employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 1.5%}fa-regular fa-star{% elif employer.averagerate >= 1.5 and employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 2.5%}fa-regular fa-star{% elif employer.averagerate >= 2.5 and employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 3.5%}fa-regular fa-star{% elif employer.averagerate >= 3.5 and employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if employer.averagerate < 4.5%}fa-regular fa-star{% elif employer.averagerate >= 4.5 and employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <a href="{% url 'employer_detail' employer.pk %}"><small>({{employer.countrate}})</small></a>
+                </span>
+              
+                  </div>
+                 
+                 
+             
+              </div>
+       
+            </div>
+          </div>
+        {% endfor %}
+      
+      <form method="GET">
+       <div class="row mb-3 py-6">
+          <div class="col-sm-10">
+            <input type="search" name="searchemployer" class="form-control form-control-sm"  placeholder="Search for company name">
+          </div>
+        </div>
+      </form>
+           
+        
+       <hr>
+      </div>
+    </div>
+
+     {% if employerprofiles.has_other_pages %}
+
+          <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-sm mt-6 ms-8">
+                  {% if employerprofiles.has_previous %}
+                  <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page={{employerprofiles.previous_page_number }}{% if request.GET.searchemployer %}&searchemployer={{ request.GET.searchemployer}}{% endif %}">Previous</a></li>
+                  {% endif%}
+
+                  {% for num  in employerprofiles.paginator.page_range %}
+                  {% if employerprofiles.number == num %}
+                  <li class="page-item"><a class="page-link bg-dark text-white me-1" href="">{{num}}</a></li>
+                  {% else %}
+                  <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page={{ num }}{% if request.GET.searchemployer %}&searchemployer={{ request.GET.searchemployer }}{% endif %}">{{num}}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if employerprofiles.has_next %}
+                  <li class="page-item"><a class="page-link bg-dark text-white me-1" href="?page={{ employerprofiles.next_page_number }}{% if request.GET.searchemployer %}&searchemployer={{ request.GET.searchemployer}}{% endif %}">Next</a></li>
+                  {% endif %}
+                </ul>
+          </nav>
+        {% endif %}
+
+
+
+
+  </div>
+</div>
+</div>
+{% else %}
+
+<div class="container py-4">
+{% for category in categories  %}
+<ul class="list-group list-group-horizontal">
+  <li class="list-group-item"><b>{{category.category_name}}</b></li>
+  <li class="list-group-item"><a href={% url 'edit_job_category' category.pk %} class="btn btn-primary btn-sm">
+  <i class="fa-solid fa-pencil fa-2xs"></i>
+  </a></li>
+  <li class="list-group-item"><a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deletemodal-{{category.pk}}">
+  <i class="fa-solid fa-trash-can fa-2xs" ></i>
+  </a></li>
+</ul>
+
+
+<div class="modal fade" tabindex="-1" id="deletemodal-{{category.pk}}" aria-labelledby="deletemodal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Do you want to delete this category?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{category.category_name}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-subtle" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'delete_category' category.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endfor  %}
+<div>
+   <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm mt-6 mb-6">
+   <i class="fa-solid fa-left-long"></i>
+   </a>
+
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,100 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+
+<div class="container py-9 mt-8 bg-light border border-solid border-2 border-primary ">
+{% if jobs %}
+<h6 class="text-center py-8 text-sm">Employer: {{employer.company_name}} jobs </h6>
+{% else %}
+
+
+<div class="d-flex justify-content-center 
+				align-items-center">
+	<div class="col-md-12 text-center">
+		<h1>Sorry</h1>
+		<h2>Employer: {{employer.company_name}}</h2>
+		<p>
+			have no jobs 
+		</p>
+	</div>
+</div>
+{% endif %}
+<div class="card-group">
+{% for job in jobs %}
+  <div class="card mx-1 border border-solid border-2 border-primary">
+    <img src="{{job.employer.imageURL}}" class="card-icon text-right position-absolute top-0 end-0 mt-1  text-light rounded  bg-dark" alt="card example" height=80 width=80 >
+
+    <div class="card-body">
+      <h5 class="card-title mt-20">{{job.title}}</h5>
+      <p class="card-text">{{job.job_description|truncatechars:300}}</p>
+      <p class="card-text">Employer: {{job.employer}} </p>
+      <p class="card-text"><small class="text-muted">{{job.publication_date}}</small></p>
+
+       <div class="small {% if job.employer.averagerate < 3 %} text-danger {% elif job.employer.averagerate < 4 %}text-warning {% elif job.employer.averagerate < 5 %} 
+                  text-info {% else %} text-success  {% endif %} mb-2">
+                <span>
+              
+                    <i class="{% if job.employer.averagerate < 0.5%}fa-regular fa-star{% elif job.employer.averagerate >= 0.5 and job.employer.averagerate < 1 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 1.5%}fa-regular fa-star{% elif job.employer.averagerate >= 1.5 and job.employer.averagerate < 2 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 2.5%}fa-regular fa-star{% elif job.employer.averagerate >= 2.5 and job.employer.averagerate < 3 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 3.5%}fa-regular fa-star{% elif job.employer.averagerate >= 3.5 and job.employer.averagerate < 4 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                    <i class="{% if job.employer.averagerate < 4.5%}fa-regular fa-star{% elif job.employer.averagerate >= 4.5 and job.employer.averagerate < 5 %}fa-regular fa-star-half-stroke{% else %}fa-solid fa-star{% endif %}" aria-hidden="true"></i>
+                </span><a href="{% url 'employer_detail' job.employer.pk %}"><small>({{job.employer.countrate}})</small></a>
+              
+        </div>
+
+
+
+
+
+
+    </div>
+  <div class="btn-group" role="group" aria-label="Basic example">
+    <a href="{% url 'job_detail' job.pk %}" class="btn btn-secondary">Job detail</a>
+ 
+  </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+  <nav aria-label="Page navigation example" class="mt-4">
+  <ul class="pagination">
+    {% if jobs.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{jobs.previous_page_number}}">Previous</a></li>
+    {% endif%}
+    {% for page  in jobs.paginator.page_range %}
+    <li class="page-item"><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+    {% endfor %}
+    {% if jobs.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{jobs.next_page_number}}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+
+
+
+
+
+<div class="card-body">
+   <a href="{% url 'employer_detail' employer.pk %}" class="btn btn-outline-primary btn-sm mt-8">See: {{employer.company_name}} details</a>
+   <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm mt-8">
+   <i class="fa-solid fa-left-long"></i> 
+   </a>
+  </div>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+{% if follows %}
+
+<section class="w-100 px-4 py-9 mt-9" style="background-color: #ffffff; border-radius: .5rem .5rem 0 0;">
+<h5 class="text-center text-muted py-6">Your followed employees ( {{  request.user.followed_by.count }} )</h5>
+  <div class="row d-flex justify-content-center">
+    
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      {% for result in follows %}
+      <div class="card mx-1 border border-solid border-2 border-primary" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <img src="{{result.employeeprofile.imageURL}}"
+                alt="avatar" class="img-fluid" style="width: 180px; border-radius: 10px;">
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h5 class="mb-1">{{result.first_name}}-{{result.last_name}}</h5>
+              <p class="mb-2 pb-1">Sector: <i>{% if result.employeeprofile.sector %}{{result.employeeprofile.sector}}{% else%} not given {% endif %}</i></p>
+              <p class="mb-2 pb-1">{{result.employeeprofile.profession}}</p>
+              <p><i>Birth date: <small>{{result.employeeprofile.birth_date}}</small></i></p>
+              <p><i>Address: <small>{{result.employeeprofile.address}}</small></i></p>
+              <p><i>Email: <small>{{result.email}}</small></i></p>
+              <p><i>Phone: <small>{{result.employeeprofile.phone_number}}</small></i></p>
+              <p><i>Bio: <small>{{result.employeeprofile.bio|truncatechars:200}}</small></p>
+              <div class="d-flex pt-1">
+                <a href="{% url 'see_profile' result.employeeprofile.pk %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1">See profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+        <nav aria-label="Page navigation example">
+        <ul class="pagination mt-6">
+            {% if follows.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{follows.previous_page_number}}">Previous</a></li>
+            {% endif%}
+            {% for page  in follows.paginator.page_range %}
+            <li class="page-item"><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+            {% endfor %}
+            {% if follows.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{follows.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    </div>
+  </div>
+</section>
+{% else %}
+
+<h5 class="text-center text-muted py-6">Your still not follows any employees</h5>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}

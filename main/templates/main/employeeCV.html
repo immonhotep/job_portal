@@ -1,0 +1,141 @@
+
+
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="border border-solid border-2 border-primary container bg-light mb-6 mt-6">
+
+           <nav class="navbar-dark bg-dark">
+                <div class="container py-2">
+                    <div class="d-flex justify-content-center">
+                    <button type="button" id="download_Btn" class="btn btn-light btn-sm ms-1"><i class="fa-solid fa-file-pdf"></i>Export to pdf </button>
+                    <a href={% url 'update_employee'  %}   class="btn btn-light btn-sm ms-1"><i class="fa-solid fa-wrench"></i>Update profile </a>
+                    </div>
+                </div>
+            </nav>
+    
+    
+
+  <div class="container py-9" id="content">  
+
+      
+
+
+  <body>
+
+   
+
+
+    <header class="bg-primary bg-gradient text-white py-5">
+      <div class="container">
+        <div class="row">
+        
+          <div class="col-md-3 text-left text-md-center mb-3">
+            <img class="rounded-circle" src="{{user.employeeprofile.imageURL}}" style="width: 200px; height:200px;"/>
+            </br>
+            
+          </div>
+         
+
+
+          <div class="col-md-9">
+            <h1>{{user.first_name}} {{user.last_name}}</h1>
+            <h5>{{user.employeeprofile.profession}}</h5>
+            <p class="border-top pt-3">{{user.employeeprofile.bio}}</p>
+            <p>Sector: <i>{{user.employeeprofile.sector}}</i></p>
+            <p>Driving licence: <i>{{user.employeeprofile.driving_licence}}</i></p>
+            <p>Requested Salary: <i>{{user.employeeprofile.salary}} HUF</i></p>
+            <p class="border-top pt-3">Birth place: <i>{{user.employeeprofile.birth_place}}</i></p>
+            <p class="">Birth date: <i>{{user.employeeprofile.birth_date}}</i></p>
+          </div>       
+        </div>        
+      </div>
+    </header>
+    <nav class="bg-dark text-white-50 mb-5">
+      <div class="container">
+          <div class="row p-3">
+              <div class="col-md pb-2 pb-md-0">
+                  <i class="fa-solid fa-envelope fa-xl"></i>
+                  <a class="text-white ml-2">{{user.email}}</a>
+              </div>
+              <div class="col-md text-md-center pb-2 pb-md-0">
+                  <i class="fa-solid fa-house fa-xl"></i>
+                  <a class="text-white ml-2">{{user.employeeprofile.address}}</a>
+              </div>       
+              <div class="col-md text-md-right">
+                  <i class="fa-solid fa-phone fa-xl"></i>
+                  <a class="text-white ml-2">{{user.employeeprofile.phone_number}}</a>
+              </div>       
+          </div>
+      </div>
+    </nav>
+    <main class="container">
+      <div class="row">
+        <div class="col-md mb-5">
+          <h2 class="mb-5">Work Experience</h2>
+          <ul>
+            {% for job in jobs  %}
+            <li>
+              <h6 class="text-primary">{{job.position_name}} / {{job.name}} ({{job.start_date}}-{{job.end_date}})</h6>
+              <p>{{job.description}}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md mb-5">
+          <h2 class="mb-5">Education</h2> 
+          <ul>
+          {% for school in schools %}
+            <li>
+              <h6 class="text-primary">{{school.school_type}} / {{school.name}} {{school.start_date}}-{{school.end_date}}</h6>
+              <p>{{school.education}}</p>
+            </li>
+          {% endfor %}
+          </ul> 
+        </div>     
+      </div>    
+      
+    </main>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+          <script>
+            const download_button =
+                document.getElementById('download_Btn');
+            const content =
+                document.getElementById('content');
+
+            download_button.addEventListener
+                ('click', async function () {
+                    const filename = '{{user.first_name}} {{user.last_name}}-CV.pdf';
+
+                    try {
+                        const opt = {
+                            margin: 1,
+                            filename: filename,
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: {
+                                unit: 'mm', format: 'a4',
+                                orientation: 'l',
+                                floatPrecision: 6,
+                            }
+                        };
+                        await html2pdf().set(opt).
+                            from(content).save();
+                    } catch (error) {
+                        console.error('Error:', error.message);
+                    }
+                });
+          </script>
+
+
+
+
+  </body>
+  </div>
+
+  </div>
+
+
+
+{% endblock content %}

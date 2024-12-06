@@ -1,0 +1,44 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+<div class="container py-9 ">
+<div class="card mx-1 border border-solid border-2 border-primary">
+  <div class="card-header d-flex align-items-center border-bottom">
+    <span class="avatar text-bg-primary avatar-lg fs-5">
+    <i class="fa-solid fa-user fa-sm"></i>
+    </span>
+    <div class="ms-3">
+      <h6 class="mb-0 fs-sm">Update Your profile information</h6>
+      
+    </div>
+   
+  </div>
+  <form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="card-body  bg-light">
+  <div class="input-group  mb-3">
+  <a href=""><img src="{{request.user.employeeprofile.imageURL}}" class="rounded border my-6" style="width: 150px; height:150px;"/></a>
+  <hr class="bg-dark mb-6">
+   </div>
+   
+   {{user_form.as_p}}
+   {{form.as_p}}
+   
+   <button type="submit" class="btn btn-primary btn-sm"> submit </button>
+   <a href="{% url 'studies' %}" class="btn btn-secondary btn-sm">Studies</a>
+   <a href="{% url 'jobs' %}" class="btn btn-secondary btn-sm">Jobs</a>
+   <a href="{% url 'change_password' %}" class="btn btn-secondary btn-sm">Change password</a>
+   <a href="javascript:history.go(-1)"  class="btn btn-success btn-sm">
+   <i class="fa-solid fa-left-long"></i> 
+   
+   </a>
+  </div>
+  </form>
+  
+  
+</div>
+
+</div>
+
+{% endblock content %}
